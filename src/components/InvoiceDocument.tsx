@@ -8,7 +8,7 @@ function formatDate(value: string | null): string {
   const dd = String(d.getDate()).padStart(2, "0");
   const mm = String(d.getMonth() + 1).padStart(2, "0");
   const yyyy = d.getFullYear();
-  return `${dd}.${mm}.${yyyy}`;
+  return `${dd}-${mm}-${yyyy}`;
 }
 
 function formatMoney(value: number): string {
@@ -18,179 +18,130 @@ function formatMoney(value: number): string {
   });
 }
 
-const td = "border border-black align-top p-1";
-const label = "text-[10px] leading-tight text-black";
+const td = "border border-black align-top p-2";
+const label = "text-[10px] uppercase tracking-wide text-black/70";
 
 export function InvoiceDocument({ invoice }: { invoice: Invoice }) {
-  const totalQty = invoice.invoice_items.reduce((s, i) => s + i.qty, 0);
-
-  // Pad the item table with blank rows so short invoices still fill a full page nicely.
-  const blankRowsNeeded = Math.max(0, 8 - invoice.invoice_items.length);
-
   return (
-    <div className="mx-auto w-full max-w-[800px] bg-white text-black font-serif text-sm print:max-w-none">
-      <h1 className="mb-2 text-center text-2xl font-bold tracking-wide">INVOICE</h1>
+    <div className="mx-auto w-full max-w-[800px] border border-black bg-white text-black font-serif text-sm print:max-w-none">
+      <div className="border-b border-black py-3 text-center">
+        <h1 className="text-2xl font-bold tracking-wide underline underline-offset-4">
+          INVOICE
+        </h1>
+      </div>
 
-      <table className="w-full border-collapse border border-black">
+      <table className="w-full border-collapse">
         <tbody>
           {/* Company block + invoice meta */}
           <tr>
-            <td className={td} rowSpan={2} style={{ width: "55%" }}>
+            <td className={`${td} border-l-0`} style={{ width: "60%" }}>
               <p className="text-lg font-bold leading-tight">{COMPANY.name}</p>
               <p className="text-lg font-bold leading-tight">{COMPANY.city}</p>
-              <p className={label}>GST NO.:{COMPANY.gstNo}</p>
-              <p className={label}>{COMPANY.stateCode}</p>
-              <p className={label}>E-mail:{COMPANY.email}</p>
-              <p className={label}>Mobile No:{COMPANY.mobiles}</p>
+              <p className={`${label} mt-2 normal-case`}>GST NO.: {COMPANY.gstNo}</p>
+              <p className={`${label} normal-case`}>{COMPANY.stateCode}</p>
+              <p className={`${label} normal-case`}>E-mail: {COMPANY.email}</p>
+              <p className={`${label} normal-case`}>Mobile No: {COMPANY.mobiles}</p>
             </td>
-            <td className={td} style={{ width: "27%" }}>
-              <span className={label}>INVOICE NO {invoice.invoice_no}</span>
-            </td>
-            <td className={td} style={{ width: "18%" }}>
-              <span className={label}>{formatDate(invoice.invoice_date)}</span>
-            </td>
-          </tr>
-          <tr>
-            <td className={td} colSpan={2}>
-              <span className={label}>Terms of Payment</span>
-              {invoice.terms_of_payment && (
-                <p className="mt-1">{invoice.terms_of_payment}</p>
-              )}
-            </td>
-          </tr>
-          <tr>
-            <td className={td} rowSpan={2}>
-              <span className={label}>TO</span>
-              <p className="mt-1 font-semibold">{invoice.customer_name}</p>
-              {invoice.customer_phone && <p>{invoice.customer_phone}</p>}
-            </td>
-            <td className={td}>
-              <span className={label}>Supplier&apos;s Ref.</span>
-              {invoice.supplier_ref && <p className="mt-1">{invoice.supplier_ref}</p>}
-            </td>
-            <td className={td}>
-              <span className={label}>Other Reference(s)</span>
-              {invoice.other_reference && <p className="mt-1">{invoice.other_reference}</p>}
-            </td>
-          </tr>
-          <tr>
-            <td className={td} colSpan={2}>
-              <div className="flex justify-between">
-                <span className={label}>Order No.</span>
-                <span className={label}>{invoice.order_no}</span>
+            <td className={`${td} border-r-0 border-t-0 p-0`} style={{ width: "40%" }}>
+              <div className="border-b border-black p-2">
+                <span className={label}>Invoice No</span>
+                <p className="font-bold">{invoice.invoice_no}</p>
               </div>
-              <div className="flex justify-between">
+              <div className="border-b border-black p-2">
                 <span className={label}>Date</span>
-                <span className={label}>{formatDate(invoice.order_date)}</span>
+                <p className="font-bold">{formatDate(invoice.invoice_date)}</p>
+              </div>
+              <div className="border-b border-black p-2">
+                <span className={label}>Order No.</span>
+                {invoice.order_no && <p>{invoice.order_no}</p>}
+              </div>
+              <div className="p-2">
+                <span className={label}>Terms of Payment</span>
+                {invoice.terms_of_payment && <p>{invoice.terms_of_payment}</p>}
               </div>
             </td>
           </tr>
+
+          {/* Bill to */}
           <tr>
-            <td className={td} colSpan={3}>
-              <div className="grid grid-cols-2 gap-x-4">
-                <div>
-                  <span className={label}>Despatch Document No.</span>
-                  <p>{invoice.despatch_document_no}</p>
-                </div>
-                <div>
-                  <span className={label}>Date</span>
-                  <p>{formatDate(invoice.despatch_date)}</p>
-                </div>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td className={td} colSpan={3}>
-              <div className="grid grid-cols-2 gap-x-4">
-                <div>
-                  <span className={label}>Despatched through</span>
-                  <p>{invoice.despatch_through}</p>
-                </div>
-                <div>
-                  <span className={label}>Destination</span>
-                  <p>{invoice.destination}</p>
-                </div>
-              </div>
+            <td className={`${td} border-x-0`} colSpan={2}>
+              <span className={label}>To (Bill To)</span>
+              <p className="mt-1 font-bold">{invoice.customer_name}</p>
+              {invoice.customer_phone && <p>{invoice.customer_phone}</p>}
+              {invoice.customer_address && <p>{invoice.customer_address}</p>}
             </td>
           </tr>
 
           {/* Items table header */}
           <tr>
-            <td className={`${td} text-center font-semibold`} style={{ width: "6%" }}>
+            <td className={`${td} border-l-0 text-center font-semibold`} style={{ width: "6%" }}>
               S.N
             </td>
-            <td className={`${td} text-center font-semibold`}>Description of Goods</td>
-            <td className={`${td} text-center font-semibold`} style={{ width: "8%" }}>
+            <td className={`${td} text-center font-semibold`}>Description</td>
+            <td className={`${td} text-center font-semibold`} style={{ width: "10%" }}>
               QTY
             </td>
-            <td className={`${td} text-center font-semibold`} style={{ width: "16%" }}>
+            <td className={`${td} text-center font-semibold`} style={{ width: "18%" }}>
               Rate
               <br />
-              (GST 18%)
-              <br />
-              (incl. of tax)
+              (GST 18% Incl.)
             </td>
-            <td className={`${td} text-center font-semibold`} style={{ width: "16%" }}>
+            <td className={`${td} border-r-0 text-center font-semibold`} style={{ width: "16%" }}>
               Amount
             </td>
           </tr>
 
           {invoice.invoice_items.map((item) => (
             <tr key={item.id}>
-              <td className={`${td} text-center`}>{item.sno}</td>
+              <td className={`${td} border-l-0 text-center`}>{item.sno}</td>
               <td className={td}>
                 {item.description}
                 {item.item_serial && (
                   <>
                     <br />
-                    (S.NO- {item.item_serial})
+                    <span className="text-xs">(S.NO- {item.item_serial})</span>
                   </>
                 )}
               </td>
               <td className={`${td} text-center`}>{item.qty}</td>
               <td className={`${td} text-right`}>{formatMoney(item.rate)}</td>
-              <td className={`${td} text-right`}>{formatMoney(item.amount)}</td>
+              <td className={`${td} border-r-0 text-right`}>{formatMoney(item.amount)}</td>
             </tr>
           ))}
 
-          {Array.from({ length: blankRowsNeeded }).map((_, i) => (
-            <tr key={`blank-${i}`}>
-              <td className={`${td} h-6`}></td>
-              <td className={td}></td>
-              <td className={td}></td>
-              <td className={td}></td>
-              <td className={td}></td>
-            </tr>
-          ))}
+          {/* Totals */}
+          <tr>
+            <td className={`${td} border-x-0 border-t-2`} style={{ width: "60%" }}>
+              <span className={label}>Amount in words</span>
+              <p className="mt-1 font-bold uppercase">{invoice.amount_in_words}</p>
+            </td>
+            <td className={`${td} border-r-0 border-t-2 text-right`} style={{ width: "40%" }}>
+              <span className={label}>Grand Total:</span>
+              <p className="text-2xl font-bold">{formatMoney(invoice.total_amount)}</p>
+            </td>
+          </tr>
 
+          {/* Footer */}
           <tr>
-            <td className={`${td} font-semibold`} colSpan={3}>
-              Amount Chargeable (in words)
-            </td>
-            <td className={`${td} text-center`}>{totalQty}</td>
-            <td className={`${td} text-right font-semibold`}>{formatMoney(invoice.total_amount)}</td>
-          </tr>
-          <tr>
-            <td className={`${td} font-bold uppercase`} colSpan={5}>
-              {invoice.amount_in_words}
-            </td>
-          </tr>
-          <tr>
-            <td className={`${td}`} colSpan={5}>
-              <div className="flex justify-between gap-4">
-                <p className="text-xs">
+            <td className={`${td} border-x-0 border-b-0`} colSpan={2}>
+              <div className="flex justify-between gap-6">
+                <p className="text-xs leading-relaxed">
                   We declare that this invoice shows the actual price of the goods
                   described and that all particulars are true and correct.
                   <br />
-                  <span className="font-bold">
-                    Bank A/c. No.{COMPANY.accountNo}, IFSC Code:{COMPANY.ifsc}
-                  </span>
+                  <span className="font-bold">Bank of Baroda A/c. No.: {COMPANY.accountNo}</span>
                   <br />
-                  <span className="font-bold">PAN NO.:{COMPANY.panNo}</span>
+                  <span className="font-bold">IFSC Code: {COMPANY.ifsc}</span>
+                  <br />
+                  <span className="font-bold">PAN NO.: {COMPANY.panNo}</span>
                 </p>
                 <div className="shrink-0 text-center text-xs">
-                  <p>for {COMPANY.name}</p>
-                  <p className="mt-8">Authorised Signatory</p>
+                  <p>
+                    For <span className="font-bold">{COMPANY.name}</span>
+                  </p>
+                  <p className="mt-10 border-t border-dotted border-black pt-1">
+                    Authorised Signatory
+                  </p>
                 </div>
               </div>
             </td>

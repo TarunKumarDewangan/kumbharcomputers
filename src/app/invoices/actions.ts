@@ -14,14 +14,8 @@ export type CreateInvoiceInput = {
   invoice_date: string;
   customer_name: string;
   customer_phone: string;
+  customer_address: string;
   order_no: string;
-  order_date: string;
-  despatch_document_no: string;
-  despatch_date: string;
-  despatch_through: string;
-  destination: string;
-  supplier_ref: string;
-  other_reference: string;
   terms_of_payment: string;
   items: NewItemInput[];
 };
@@ -42,14 +36,8 @@ export async function createInvoice(input: CreateInvoiceInput): Promise<{ id: st
       invoice_date: input.invoice_date || new Date().toISOString().slice(0, 10),
       customer_name: input.customer_name,
       customer_phone: input.customer_phone || null,
+      customer_address: input.customer_address || null,
       order_no: input.order_no || null,
-      order_date: input.order_date || null,
-      despatch_document_no: input.despatch_document_no || null,
-      despatch_date: input.despatch_date || null,
-      despatch_through: input.despatch_through || null,
-      destination: input.destination || null,
-      supplier_ref: input.supplier_ref || null,
-      other_reference: input.other_reference || null,
       terms_of_payment: input.terms_of_payment || null,
       amount_in_words: amountToWordsIndian(totalAmount),
       total_amount: totalAmount,

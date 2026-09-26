@@ -9,24 +9,19 @@ function emptyItem(): NewItemInput {
 }
 
 const inputClass =
-  "w-full rounded border border-gray-300 px-2 py-1.5 text-sm focus:border-black focus:outline-none";
-const labelClass = "mb-1 block text-xs font-medium text-gray-600";
+  "w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100";
+const labelClass = "mb-1.5 block text-xs font-medium text-slate-600";
+const cardClass = "rounded-xl border border-slate-200 bg-white p-5 shadow-sm";
 
 export function NewInvoiceForm() {
   const [items, setItems] = useState<NewItemInput[]>([emptyItem()]);
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
+  const [customerAddress, setCustomerAddress] = useState("");
   const [invoiceDate, setInvoiceDate] = useState(
     () => new Date().toISOString().slice(0, 10)
   );
   const [orderNo, setOrderNo] = useState("");
-  const [orderDate, setOrderDate] = useState("");
-  const [despatchDocumentNo, setDespatchDocumentNo] = useState("");
-  const [despatchDate, setDespatchDate] = useState("");
-  const [despatchThrough, setDespatchThrough] = useState("");
-  const [destination, setDestination] = useState("");
-  const [supplierRef, setSupplierRef] = useState("");
-  const [otherReference, setOtherReference] = useState("");
   const [termsOfPayment, setTermsOfPayment] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -65,14 +60,8 @@ export function NewInvoiceForm() {
           invoice_date: invoiceDate,
           customer_name: customerName,
           customer_phone: customerPhone,
+          customer_address: customerAddress,
           order_no: orderNo,
-          order_date: orderDate,
-          despatch_document_no: despatchDocumentNo,
-          despatch_date: despatchDate,
-          despatch_through: despatchThrough,
-          destination,
-          supplier_ref: supplierRef,
-          other_reference: otherReference,
           terms_of_payment: termsOfPayment,
           items,
         });
@@ -86,22 +75,23 @@ export function NewInvoiceForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-5 pb-24">
       {error && (
-        <p className="rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {error}
         </p>
       )}
 
-      <section className="rounded border border-gray-200 p-4">
-        <h2 className="mb-3 text-sm font-semibold text-gray-800">Customer & Invoice</h2>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <section className={cardClass}>
+        <SectionHeading step="1" title="Customer & Invoice" />
+        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div>
             <label className={labelClass}>Customer Name *</label>
             <input
               className={inputClass}
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
+              placeholder="e.g. Tarun Kumar Dewangan"
               required
             />
           </div>
@@ -111,6 +101,7 @@ export function NewInvoiceForm() {
               className={inputClass}
               value={customerPhone}
               onChange={(e) => setCustomerPhone(e.target.value)}
+              placeholder="7898108422"
             />
           </div>
           <div>
@@ -122,68 +113,63 @@ export function NewInvoiceForm() {
               onChange={(e) => setInvoiceDate(e.target.value)}
             />
           </div>
-        </div>
-      </section>
-
-      <details className="rounded border border-gray-200 p-4">
-        <summary className="cursor-pointer text-sm font-semibold text-gray-800">
-          Order / Despatch details (optional)
-        </summary>
-        <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="sm:col-span-2">
+            <label className={labelClass}>Customer Address</label>
+            <input
+              className={inputClass}
+              value={customerAddress}
+              onChange={(e) => setCustomerAddress(e.target.value)}
+              placeholder="e.g. Dhamtari"
+            />
+          </div>
           <div>
             <label className={labelClass}>Order No.</label>
             <input className={inputClass} value={orderNo} onChange={(e) => setOrderNo(e.target.value)} />
           </div>
-          <div>
-            <label className={labelClass}>Order Date</label>
-            <input type="date" className={inputClass} value={orderDate} onChange={(e) => setOrderDate(e.target.value)} />
-          </div>
-          <div>
-            <label className={labelClass}>Despatch Document No.</label>
-            <input className={inputClass} value={despatchDocumentNo} onChange={(e) => setDespatchDocumentNo(e.target.value)} />
-          </div>
-          <div>
-            <label className={labelClass}>Despatch Date</label>
-            <input type="date" className={inputClass} value={despatchDate} onChange={(e) => setDespatchDate(e.target.value)} />
-          </div>
-          <div>
-            <label className={labelClass}>Despatched Through</label>
-            <input className={inputClass} value={despatchThrough} onChange={(e) => setDespatchThrough(e.target.value)} />
-          </div>
-          <div>
-            <label className={labelClass}>Destination</label>
-            <input className={inputClass} value={destination} onChange={(e) => setDestination(e.target.value)} />
-          </div>
-          <div>
-            <label className={labelClass}>Supplier&apos;s Ref.</label>
-            <input className={inputClass} value={supplierRef} onChange={(e) => setSupplierRef(e.target.value)} />
-          </div>
-          <div>
-            <label className={labelClass}>Other Reference(s)</label>
-            <input className={inputClass} value={otherReference} onChange={(e) => setOtherReference(e.target.value)} />
-          </div>
-          <div>
-            <label className={labelClass}>Terms of Payment</label>
-            <input className={inputClass} value={termsOfPayment} onChange={(e) => setTermsOfPayment(e.target.value)} />
-          </div>
+        </div>
+      </section>
+
+      <details className={`${cardClass} group`}>
+        <summary className="flex cursor-pointer list-none items-center justify-between text-sm font-semibold text-slate-800">
+          <SectionHeading step="2" title="Terms of Payment" subtitle="optional" />
+          <svg
+            className="h-4 w-4 shrink-0 text-slate-400 transition group-open:rotate-180"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path d="m6 9 6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </summary>
+        <div className="mt-4">
+          <input
+            className={inputClass}
+            value={termsOfPayment}
+            onChange={(e) => setTermsOfPayment(e.target.value)}
+            placeholder="e.g. Cash / UPI / 7 days credit"
+          />
         </div>
       </details>
 
-      <section className="rounded border border-gray-200 p-4">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-gray-800">Items</h2>
+      <section className={cardClass}>
+        <div className="flex items-center justify-between">
+          <SectionHeading step="3" title="Items" />
           <button
             type="button"
             onClick={addItem}
-            className="rounded bg-gray-800 px-3 py-1.5 text-xs font-medium text-white hover:bg-gray-700"
+            className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-slate-700"
           >
             + Add Item
           </button>
         </div>
 
-        <div className="space-y-3">
+        <div className="mt-4 space-y-3">
           {items.map((item, index) => (
-            <div key={index} className="grid grid-cols-1 gap-2 rounded border border-gray-100 p-3 sm:grid-cols-12 sm:items-end">
+            <div
+              key={index}
+              className="grid grid-cols-1 gap-3 rounded-lg border border-slate-100 bg-slate-50/60 p-3 sm:grid-cols-12 sm:items-end"
+            >
               <div className="sm:col-span-5">
                 <label className={labelClass}>Description of Goods *</label>
                 <input
@@ -223,15 +209,15 @@ export function NewInvoiceForm() {
                   onChange={(e) => updateItem(index, { rate: Number(e.target.value) })}
                 />
               </div>
-              <div className="flex items-center justify-between sm:col-span-1">
-                <span className="text-xs text-gray-500">
-                  {(item.qty * item.rate).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+              <div className="flex items-center justify-between sm:col-span-1 sm:flex-col sm:items-end sm:gap-1">
+                <span className="text-xs font-semibold text-slate-700">
+                  ₹{(item.qty * item.rate).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                 </span>
                 {items.length > 1 && (
                   <button
                     type="button"
                     onClick={() => removeItem(index)}
-                    className="ml-2 text-xs text-red-600 hover:underline"
+                    className="text-xs font-medium text-red-600 hover:text-red-700 hover:underline"
                   >
                     Remove
                   </button>
@@ -240,19 +226,45 @@ export function NewInvoiceForm() {
             </div>
           ))}
         </div>
-
-        <div className="mt-3 flex justify-end text-sm font-semibold">
-          Total: ₹{total.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
-        </div>
       </section>
 
-      <button
-        type="submit"
-        disabled={isPending}
-        className="w-full rounded bg-black px-4 py-2.5 text-sm font-semibold text-white hover:bg-gray-800 disabled:opacity-50"
-      >
-        {isPending ? "Saving..." : "Save & Generate Invoice"}
-      </button>
+      <div className="fixed inset-x-0 bottom-0 z-10 border-t border-slate-200 bg-white/90 backdrop-blur print:hidden">
+        <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Total Amount</p>
+            <p className="text-lg font-bold text-slate-900">
+              ₹{total.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+            </p>
+          </div>
+          <button
+            type="submit"
+            disabled={isPending}
+            className="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isPending ? "Saving..." : "Save & Generate Invoice"}
+          </button>
+        </div>
+      </div>
     </form>
+  );
+}
+
+function SectionHeading({
+  step,
+  title,
+  subtitle,
+}: {
+  step: string;
+  title: string;
+  subtitle?: string;
+}) {
+  return (
+    <div className="flex items-center gap-2.5">
+      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-xs font-bold text-indigo-600">
+        {step}
+      </span>
+      <h2 className="text-sm font-semibold text-slate-800">{title}</h2>
+      {subtitle && <span className="text-xs text-slate-400">({subtitle})</span>}
+    </div>
   );
 }
