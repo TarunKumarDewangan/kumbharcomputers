@@ -18,8 +18,11 @@ function formatMoney(value: number): string {
   });
 }
 
-const td = "border border-black align-top p-2";
-const label = "text-[10px] uppercase tracking-wide text-black/70";
+const td = "border border-black align-top p-3";
+// Bold black section labels (INVOICE NO, DATE, TO (BILL TO), ...).
+const metaLabel = "block text-[10px] font-semibold uppercase tracking-wide text-black";
+// Plain company detail lines — must stay normal case, solid black (not gray).
+const detail = "text-xs text-black leading-snug";
 
 export function InvoiceDocument({ invoice }: { invoice: Invoice }) {
   return (
@@ -37,26 +40,26 @@ export function InvoiceDocument({ invoice }: { invoice: Invoice }) {
             <td className={`${td} border-l-0`} style={{ width: "60%" }}>
               <p className="text-lg font-bold leading-tight">{COMPANY.name}</p>
               <p className="text-lg font-bold leading-tight">{COMPANY.city}</p>
-              <p className={`${label} mt-2 normal-case`}>GST NO.: {COMPANY.gstNo}</p>
-              <p className={`${label} normal-case`}>{COMPANY.stateCode}</p>
-              <p className={`${label} normal-case`}>E-mail: {COMPANY.email}</p>
-              <p className={`${label} normal-case`}>Mobile No: {COMPANY.mobiles}</p>
+              <p className={`${detail} mt-2`}>GST NO.: {COMPANY.gstNo}</p>
+              <p className={detail}>{COMPANY.stateCode}</p>
+              <p className={detail}>E-mail: {COMPANY.email}</p>
+              <p className={detail}>Mobile No: {COMPANY.mobiles}</p>
             </td>
             <td className={`${td} border-r-0 border-t-0 p-0`} style={{ width: "40%" }}>
-              <div className="border-b border-black p-2">
-                <span className={label}>Invoice No</span>
+              <div className="border-b border-black p-3">
+                <span className={metaLabel}>Invoice No</span>
                 <p className="font-bold">{invoice.invoice_no}</p>
               </div>
-              <div className="border-b border-black p-2">
-                <span className={label}>Date</span>
+              <div className="border-b border-black p-3">
+                <span className={metaLabel}>Date</span>
                 <p className="font-bold">{formatDate(invoice.invoice_date)}</p>
               </div>
-              <div className="border-b border-black p-2">
-                <span className={label}>Order No.</span>
+              <div className="border-b border-black p-3">
+                <span className={metaLabel}>Order No.</span>
                 {invoice.order_no && <p>{invoice.order_no}</p>}
               </div>
-              <div className="p-2">
-                <span className={label}>Terms of Payment</span>
+              <div className="p-3">
+                <span className={metaLabel}>Terms of Payment</span>
                 {invoice.terms_of_payment && <p>{invoice.terms_of_payment}</p>}
               </div>
             </td>
@@ -65,7 +68,7 @@ export function InvoiceDocument({ invoice }: { invoice: Invoice }) {
           {/* Bill to */}
           <tr>
             <td className={`${td} border-x-0`} colSpan={2}>
-              <span className={label}>To (Bill To)</span>
+              <span className={metaLabel}>To (Bill To)</span>
               <p className="mt-1 font-bold">{invoice.customer_name}</p>
               {invoice.customer_phone && <p>{invoice.customer_phone}</p>}
               {invoice.customer_address && <p>{invoice.customer_address}</p>}
@@ -78,13 +81,13 @@ export function InvoiceDocument({ invoice }: { invoice: Invoice }) {
               S.N
             </td>
             <td className={`${td} text-center font-semibold`}>Description</td>
-            <td className={`${td} text-center font-semibold`} style={{ width: "10%" }}>
+            <td className={`${td} text-center font-semibold`} style={{ width: "9%" }}>
               QTY
             </td>
-            <td className={`${td} text-center font-semibold`} style={{ width: "18%" }}>
+            <td className={`${td} text-center font-semibold`} style={{ width: "22%" }}>
               Rate
               <br />
-              (GST 18% Incl.)
+              <span className="whitespace-nowrap text-xs font-normal">(GST 18% Incl.)</span>
             </td>
             <td className={`${td} border-r-0 text-center font-semibold`} style={{ width: "16%" }}>
               Amount
@@ -112,11 +115,11 @@ export function InvoiceDocument({ invoice }: { invoice: Invoice }) {
           {/* Totals */}
           <tr>
             <td className={`${td} border-x-0 border-t-2`} style={{ width: "60%" }}>
-              <span className={label}>Amount in words</span>
+              <span className={metaLabel}>Amount in words</span>
               <p className="mt-1 font-bold uppercase">{invoice.amount_in_words}</p>
             </td>
             <td className={`${td} border-r-0 border-t-2 text-right`} style={{ width: "40%" }}>
-              <span className={label}>Grand Total:</span>
+              <span className={metaLabel}>Grand Total:</span>
               <p className="text-2xl font-bold">{formatMoney(invoice.total_amount)}</p>
             </td>
           </tr>

@@ -170,7 +170,7 @@ export function NewInvoiceForm() {
               key={index}
               className="grid grid-cols-1 gap-3 rounded-lg border border-slate-100 bg-slate-50/60 p-3 sm:grid-cols-12 sm:items-end"
             >
-              <div className="sm:col-span-5">
+              <div className="sm:col-span-4">
                 <label className={labelClass}>Description of Goods *</label>
                 <input
                   className={inputClass}
@@ -179,7 +179,7 @@ export function NewInvoiceForm() {
                   placeholder="e.g. HP 585 SMART TANK COLOR PRINTER"
                 />
               </div>
-              <div className="sm:col-span-3">
+              <div className="sm:col-span-2">
                 <label className={labelClass}>Serial No. (S.NO-)</label>
                 <input
                   className={inputClass}
@@ -187,7 +187,7 @@ export function NewInvoiceForm() {
                   onChange={(e) => updateItem(index, { item_serial: e.target.value })}
                 />
               </div>
-              <div className="sm:col-span-1">
+              <div className="sm:col-span-2">
                 <label className={labelClass}>Qty</label>
                 <input
                   type="number"
@@ -209,7 +209,7 @@ export function NewInvoiceForm() {
                   onChange={(e) => updateItem(index, { rate: Number(e.target.value) })}
                 />
               </div>
-              <div className="flex items-center justify-between sm:col-span-1 sm:flex-col sm:items-end sm:gap-1">
+              <div className="flex items-center justify-between sm:col-span-2 sm:flex-col sm:items-end sm:gap-1">
                 <span className="text-xs font-semibold text-slate-700">
                   ₹{(item.qty * item.rate).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                 </span>
@@ -229,7 +229,7 @@ export function NewInvoiceForm() {
       </section>
 
       <div className="fixed inset-x-0 bottom-0 z-10 border-t border-slate-200 bg-white/90 backdrop-blur print:hidden">
-        <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+        <div className="mx-auto flex max-w-4xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
           <div>
             <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Total Amount</p>
             <p className="text-lg font-bold text-slate-900">
