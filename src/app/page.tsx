@@ -54,12 +54,12 @@ export default async function HomePage({
       </div>
 
       <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-        <div className="flex flex-col gap-3 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 border-b border-slate-100 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
           <h2 className="text-sm font-semibold text-slate-800">
             {query ? `Search Results (${filtered.length})` : "Recent Invoices"}
           </h2>
-          <div className="flex items-center gap-3">
-            <form action="/" method="GET" className="relative">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <form action="/" method="GET" className="relative w-full sm:w-auto">
               <svg
                 className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
                 viewBox="0 0 24 24"
@@ -75,7 +75,7 @@ export default async function HomePage({
                 name="q"
                 defaultValue={query}
                 placeholder="Search name, mobile, invoice no..."
-                className="w-64 rounded-lg border border-slate-300 bg-white py-1.5 pl-8 pr-3 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+                className="w-full rounded-lg border border-slate-300 bg-white py-1.5 pl-8 pr-3 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100 sm:w-64"
               />
             </form>
             {query && (
@@ -97,9 +97,9 @@ export default async function HomePage({
             {filtered.map((inv) => (
               <li
                 key={inv.id}
-                className="flex items-center justify-between gap-4 px-5 py-4 transition hover:bg-slate-50"
+                className="flex flex-col gap-2 px-4 py-4 transition hover:bg-slate-50 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-5"
               >
-                <Link href={`/invoices/${inv.id}`} className="min-w-0 flex-1">
+                <Link href={`/invoices/${inv.id}`} className="min-w-0 sm:flex-1">
                   <p className="truncate text-sm font-semibold text-slate-900">
                     {inv.customer_name}
                   </p>
@@ -113,17 +113,19 @@ export default async function HomePage({
                     {inv.customer_phone && ` · ${inv.customer_phone}`}
                   </p>
                 </Link>
-                <span className="shrink-0 text-sm font-semibold text-slate-900">
-                  ₹{Number(inv.total_amount).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
-                </span>
-                <div className="flex shrink-0 items-center gap-1">
-                  <Link
-                    href={`/invoices/${inv.id}/edit`}
-                    className="rounded px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100"
-                  >
-                    Edit
-                  </Link>
-                  <DeleteButton invoiceId={inv.id} invoiceNo={inv.invoice_no} />
+                <div className="flex items-center justify-between gap-2 sm:shrink-0 sm:justify-end">
+                  <span className="text-sm font-semibold text-slate-900">
+                    ₹{Number(inv.total_amount).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+                  </span>
+                  <div className="flex shrink-0 items-center gap-1">
+                    <Link
+                      href={`/invoices/${inv.id}/edit`}
+                      className="rounded px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100"
+                    >
+                      Edit
+                    </Link>
+                    <DeleteButton invoiceId={inv.id} invoiceNo={inv.invoice_no} />
+                  </div>
                 </div>
               </li>
             ))}

@@ -28,15 +28,15 @@ export default async function InvoiceViewPage({
   const invoice = data as unknown as Invoice;
 
   return (
-    <main className="min-h-screen bg-gray-200 py-8 print:bg-white print:p-0">
-      <div className="mx-auto mb-4 flex max-w-[210mm] items-center justify-between px-4 print:hidden">
+    <main className="min-h-screen bg-gray-200 py-4 sm:py-8 print:bg-white print:p-0">
+      <div className="mx-auto mb-4 flex max-w-[210mm] flex-wrap items-center justify-between gap-2 px-4 print:hidden">
         <Link href="/" className="text-sm font-medium text-slate-700 hover:underline">
-          ← Back to invoices
+          ← Back
         </Link>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-1 sm:gap-2">
           <Link
             href={`/invoices/${id}/edit`}
-            className="rounded px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+            className="rounded px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 sm:px-4"
           >
             Edit
           </Link>
@@ -45,7 +45,12 @@ export default async function InvoiceViewPage({
         </div>
       </div>
 
-      <InvoiceDocument invoice={invoice} />
+      <p className="mx-auto mb-2 max-w-[210mm] px-4 text-center text-xs text-slate-500 sm:hidden print:hidden">
+        Scroll sideways to view the full invoice — it prints correctly on A4.
+      </p>
+      <div className="overflow-x-auto px-4 print:overflow-visible print:px-0 sm:px-0">
+        <InvoiceDocument invoice={invoice} />
+      </div>
     </main>
   );
 }

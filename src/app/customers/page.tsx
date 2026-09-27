@@ -38,18 +38,18 @@ export default async function CustomersPage({
       </div>
 
       <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-        <div className="flex flex-col gap-3 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 border-b border-slate-100 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
           <h2 className="text-sm font-semibold text-slate-800">
             {query ? `Search Results (${filtered.length})` : `All Customers (${customers.length})`}
           </h2>
-          <div className="flex items-center gap-3">
-            <form action="/customers" method="GET" className="relative">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <form action="/customers" method="GET" className="relative w-full sm:w-auto">
               <input
                 type="text"
                 name="q"
                 defaultValue={query}
                 placeholder="Search name, phone..."
-                className="w-56 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100 sm:w-56"
               />
             </form>
             {query && (
@@ -71,15 +71,15 @@ export default async function CustomersPage({
             {filtered.map((c) => (
               <li
                 key={c.id}
-                className="flex items-center justify-between gap-4 px-5 py-4 transition hover:bg-slate-50"
+                className="flex flex-col gap-2 px-4 py-4 transition hover:bg-slate-50 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-5"
               >
-                <div className="min-w-0 flex-1">
+                <div className="min-w-0 sm:flex-1">
                   <p className="truncate text-sm font-semibold text-slate-900">{c.name}</p>
                   <p className="mt-0.5 text-xs text-slate-500">
                     {[c.phone, c.address].filter(Boolean).join(" · ") || "No contact details"}
                   </p>
                 </div>
-                <div className="flex shrink-0 items-center gap-1">
+                <div className="flex shrink-0 items-center gap-1 self-end sm:self-auto">
                   <Link
                     href={`/customers/${c.id}/edit`}
                     className="rounded px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100"

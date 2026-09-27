@@ -22,7 +22,7 @@ export default async function EditCustomerPage({
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-2">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">Edit Customer</h1>
           <p className="mt-1 text-sm text-slate-500">{customer.name}</p>

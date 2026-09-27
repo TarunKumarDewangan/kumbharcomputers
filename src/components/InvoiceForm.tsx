@@ -152,7 +152,7 @@ export function InvoiceForm({
       )}
 
       <section className={cardClass}>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <SectionHeading step="1" title="Customer & Invoice" />
           <a
             href="/customers/new"
@@ -331,23 +331,28 @@ export function InvoiceForm({
       </section>
 
       <div className="fixed inset-x-0 bottom-0 z-10 border-t border-slate-200 bg-white/90 backdrop-blur print:hidden">
-        <div className="mx-auto flex max-w-4xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-          <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Total Amount</p>
-            <p className="text-lg font-bold text-slate-900">
+        <div className="mx-auto flex max-w-4xl items-center justify-between gap-2 px-3 py-3 sm:gap-4 sm:px-6">
+          <div className="min-w-0">
+            <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Total</p>
+            <p className="truncate text-base font-bold text-slate-900 sm:text-lg">
               ₹{total.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
             </p>
           </div>
           <button
             type="submit"
             disabled={isPending}
-            className="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-50"
+            className="shrink-0 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-50 sm:px-5"
           >
-            {isPending
-              ? "Saving..."
-              : mode === "edit"
-                ? "Save Changes"
-                : "Save & Generate Invoice"}
+            {isPending ? (
+              "Saving..."
+            ) : mode === "edit" ? (
+              "Save Changes"
+            ) : (
+              <>
+                <span className="sm:hidden">Save Invoice</span>
+                <span className="hidden sm:inline">Save & Generate Invoice</span>
+              </>
+            )}
           </button>
         </div>
       </div>
