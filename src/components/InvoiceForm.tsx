@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
   createInvoice,
@@ -8,6 +8,14 @@ import {
   type InvoiceFormInput,
   type NewItemInput,
 } from "@/app/invoices/actions";
+import { searchCustomers } from "@/app/customers/actions";
+
+type CustomerSuggestion = {
+  id: string;
+  name: string;
+  phone: string | null;
+  address: string | null;
+};
 
 function emptyItem(): NewItemInput {
   return { description: "", item_serial: "", qty: 1, rate: 0 };
@@ -49,6 +57,39 @@ export function InvoiceForm({
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+
+  const [customerSuggestions, setCustomerSuggestions] = useState<CustomerSuggestion[]>([]);
+  const [showCustomerSuggestions, setShowCustomerSuggestions] = useState(false);
+  const customerPickedRef = useRef(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (customerPickedRef.current) {
+      customerPickedRef.current = false;
+      return;
+    }
+    if (!customerName.trim()) {
+      setCustomerSuggestions([]);
+      return;
+    }
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(async () => {
+      const results = await searchCustomers(customerName);
+      setCustomerSuggestions(results);
+    }, 200);
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [customerName]);
+
+  function pickCustomer(c: CustomerSuggestion) {
+    customerPickedRef.current = true;
+    setCustomerName(c.name);
+    setCustomerPhone(c.phone ?? "");
+    setCustomerAddress(c.address ?? "");
+    setCustomerSuggestions([]);
+    setShowCustomerSuggestions(false);
+  }
 
   const total = items.reduce((s, i) => s + i.qty * i.rate, 0);
 
@@ -111,17 +152,50 @@ export function InvoiceForm({
       )}
 
       <section className={cardClass}>
-        <SectionHeading step="1" title="Customer & Invoice" />
+        <div className="flex items-center justify-between">
+          <SectionHeading step="1" title="Customer & Invoice" />
+          <a
+            href="/customers/new"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs font-medium text-indigo-600 hover:text-indigo-500"
+          >
+            + Add new customer
+          </a>
+        </div>
         <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <div>
+          <div className="relative">
             <label className={labelClass}>Customer Name *</label>
             <input
               className={inputClass}
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
+              onFocus={() => setShowCustomerSuggestions(true)}
+              onBlur={() => setTimeout(() => setShowCustomerSuggestions(false), 150)}
               placeholder="e.g. Tarun Kumar Dewangan"
+              autoComplete="off"
               required
             />
+            {showCustomerSuggestions && customerSuggestions.length > 0 && (
+              <ul className="absolute z-10 mt-1 w-full overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg">
+                {customerSuggestions.map((c) => (
+                  <li key={c.id}>
+                    <button
+                      type="button"
+                      onMouseDown={() => pickCustomer(c)}
+                      className="flex w-full flex-col items-start px-3 py-2 text-left text-sm hover:bg-indigo-50"
+                    >
+                      <span className="font-medium text-slate-800">{c.name}</span>
+                      {(c.phone || c.address) && (
+                        <span className="text-xs text-slate-500">
+                          {[c.phone, c.address].filter(Boolean).join(" · ")}
+                        </span>
+                      )}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
           <div>
             <label className={labelClass}>Customer Phone</label>

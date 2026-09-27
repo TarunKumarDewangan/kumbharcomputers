@@ -22,3 +22,29 @@ export type Invoice = {
   created_at: string;
   invoice_items: InvoiceItem[];
 };
+
+export type Customer = {
+  id: string;
+  name: string;
+  phone: string | null;
+  address: string | null;
+  created_at: string;
+};
+
+export type Product = {
+  id: string;
+  name: string;
+  sku: string | null;
+  stock_qty: number;
+  rate: number;
+  created_at: string;
+};
+
+export type StockEntry = {
+  id: string;
+  product_id: string;
+  qty: number;
+  rate: number | null;
+  entry_date: string;
+  created_at: string;
+};
