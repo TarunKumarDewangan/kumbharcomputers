@@ -79,7 +79,7 @@ export default async function HomePage({
               />
             </form>
             {query && (
-              <Link href="/" className="text-xs font-medium text-slate-500 hover:text-slate-700">
+              <Link href="/" prefetch={false} className="text-xs font-medium text-slate-500 hover:text-slate-700">
                 Clear
               </Link>
             )}
@@ -99,7 +99,7 @@ export default async function HomePage({
                 key={inv.id}
                 className="flex flex-col gap-2 px-4 py-4 transition hover:bg-slate-50 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-5"
               >
-                <Link href={`/invoices/${inv.id}`} className="min-w-0 sm:flex-1">
+                <Link href={`/invoices/${inv.id}`} prefetch={false} className="min-w-0 sm:flex-1">
                   <p className="truncate text-sm font-semibold text-slate-900">
                     {inv.customer_name}
                   </p>
@@ -120,6 +120,7 @@ export default async function HomePage({
                   <div className="flex shrink-0 items-center gap-1">
                     <Link
                       href={`/invoices/${inv.id}/edit`}
+                      prefetch={false}
                       className="rounded px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100"
                     >
                       Edit
@@ -134,7 +135,7 @@ export default async function HomePage({
           <div className="flex flex-col items-center gap-2 px-5 py-16 text-center">
             <p className="text-sm font-medium text-slate-700">No invoices match &quot;{query}&quot;</p>
             <p className="text-sm text-slate-500">Try a different name, phone number, or invoice no.</p>
-            <Link href="/" className="mt-2 text-sm font-medium text-indigo-600 hover:text-indigo-500">
+            <Link href="/" prefetch={false} className="mt-2 text-sm font-medium text-indigo-600 hover:text-indigo-500">
               Clear search
             </Link>
           </div>

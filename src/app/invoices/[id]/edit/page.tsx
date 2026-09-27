@@ -36,6 +36,7 @@ export default async function EditInvoicePage({
         </div>
         <Link
           href={`/invoices/${id}`}
+          prefetch={false}
           className="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100"
         >
           ← Back to invoice

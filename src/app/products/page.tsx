@@ -62,7 +62,7 @@ export default async function ProductsPage({
               />
             </form>
             {query && (
-              <Link href="/products" className="text-xs font-medium text-slate-500 hover:text-slate-700">
+              <Link href="/products" prefetch={false} className="text-xs font-medium text-slate-500 hover:text-slate-700">
                 Clear
               </Link>
             )}
@@ -96,6 +96,7 @@ export default async function ProductsPage({
                     <div className="flex shrink-0 items-center gap-1">
                       <Link
                         href={`/products/${p.id}/edit`}
+                        prefetch={false}
                         className="rounded px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100"
                       >
                         Edit
@@ -117,6 +118,7 @@ export default async function ProductsPage({
             </p>
             <Link
               href={query ? "/products" : "/products/new"}
+              prefetch={!query}
               className="mt-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500"
             >
               {query ? "Clear search" : "+ New Stock Entry"}

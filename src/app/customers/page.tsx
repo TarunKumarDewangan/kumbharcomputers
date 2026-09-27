@@ -53,7 +53,7 @@ export default async function CustomersPage({
               />
             </form>
             {query && (
-              <Link href="/customers" className="text-xs font-medium text-slate-500 hover:text-slate-700">
+              <Link href="/customers" prefetch={false} className="text-xs font-medium text-slate-500 hover:text-slate-700">
                 Clear
               </Link>
             )}
@@ -82,6 +82,7 @@ export default async function CustomersPage({
                 <div className="flex shrink-0 items-center gap-1 self-end sm:self-auto">
                   <Link
                     href={`/customers/${c.id}/edit`}
+                    prefetch={false}
                     className="rounded px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100"
                   >
                     Edit
@@ -101,6 +102,7 @@ export default async function CustomersPage({
             </p>
             <Link
               href={query ? "/customers" : "/customers/new"}
+              prefetch={!query}
               className="mt-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500"
             >
               {query ? "Clear search" : "+ Add Customer"}
