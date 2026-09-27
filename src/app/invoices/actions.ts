@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { amountToWordsIndian } from "@/lib/numberToWords";
+import { upsertCustomerFromSale } from "@/app/customers/actions";
 
 export type NewItemInput = {
   description: string;
@@ -73,6 +74,8 @@ export async function createInvoice(input: InvoiceFormInput): Promise<{ id: stri
     throw new Error(itemsError.message);
   }
 
+  await upsertCustomerFromSale(input.customer_name, input.customer_phone, input.customer_address);
+
   revalidatePath("/");
   return { id: invoice.id };
 }
@@ -111,6 +114,8 @@ export async function updateInvoice(id: string, input: InvoiceFormInput): Promis
   if (itemsError) {
     throw new Error(itemsError.message);
   }
+
+  await upsertCustomerFromSale(input.customer_name, input.customer_phone, input.customer_address);
 
   revalidatePath("/");
   revalidatePath(`/invoices/${id}`);
