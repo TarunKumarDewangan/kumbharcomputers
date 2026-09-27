@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { NewInvoiceForm } from "./NewInvoiceForm";
+import { InvoiceForm } from "@/components/InvoiceForm";
 
 export default function NewInvoicePage() {
   return (
@@ -18,7 +18,7 @@ export default function NewInvoicePage() {
           ← Back
         </Link>
       </div>
-      <NewInvoiceForm />
+      <InvoiceForm mode="create" />
     </div>
   );
 }

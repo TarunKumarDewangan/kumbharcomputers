@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { DeleteButton } from "@/app/invoices/[id]/DeleteButton";
 
 export default async function HomePage() {
   const supabase = await createClient();
@@ -45,28 +46,35 @@ export default async function HomePage() {
         {invoices && invoices.length > 0 ? (
           <ul className="divide-y divide-slate-100">
             {invoices.map((inv) => (
-              <li key={inv.id}>
-                <Link
-                  href={`/invoices/${inv.id}`}
-                  className="flex items-center justify-between gap-4 px-5 py-4 transition hover:bg-slate-50"
-                >
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-slate-900">
-                      {inv.customer_name}
-                    </p>
-                    <p className="mt-0.5 text-xs text-slate-500">
-                      Invoice #{inv.invoice_no} ·{" "}
-                      {new Date(inv.invoice_date).toLocaleDateString("en-IN", {
-                        day: "2-digit",
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </p>
-                  </div>
-                  <span className="shrink-0 text-sm font-semibold text-slate-900">
-                    ₹{Number(inv.total_amount).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
-                  </span>
+              <li
+                key={inv.id}
+                className="flex items-center justify-between gap-4 px-5 py-4 transition hover:bg-slate-50"
+              >
+                <Link href={`/invoices/${inv.id}`} className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold text-slate-900">
+                    {inv.customer_name}
+                  </p>
+                  <p className="mt-0.5 text-xs text-slate-500">
+                    Invoice #{inv.invoice_no} ·{" "}
+                    {new Date(inv.invoice_date).toLocaleDateString("en-IN", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </p>
                 </Link>
+                <span className="shrink-0 text-sm font-semibold text-slate-900">
+                  ₹{Number(inv.total_amount).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+                </span>
+                <div className="flex shrink-0 items-center gap-1">
+                  <Link
+                    href={`/invoices/${inv.id}/edit`}
+                    className="rounded px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100"
+                  >
+                    Edit
+                  </Link>
+                  <DeleteButton invoiceId={inv.id} invoiceNo={inv.invoice_no} />
+                </div>
               </li>
             ))}
           </ul>

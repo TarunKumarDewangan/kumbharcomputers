@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { InvoiceDocument } from "@/components/InvoiceDocument";
 import type { Invoice } from "@/lib/types";
 import { PrintButton } from "./PrintButton";
+import { DeleteButton } from "./DeleteButton";
 
 export default async function InvoiceViewPage({
   params,
@@ -32,7 +33,16 @@ export default async function InvoiceViewPage({
         <Link href="/" className="text-sm font-medium text-slate-700 hover:underline">
           ← Back to invoices
         </Link>
-        <PrintButton />
+        <div className="flex items-center gap-2">
+          <Link
+            href={`/invoices/${id}/edit`}
+            className="rounded px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+          >
+            Edit
+          </Link>
+          <DeleteButton invoiceId={id} invoiceNo={invoice.invoice_no} />
+          <PrintButton />
+        </div>
       </div>
 
       <InvoiceDocument invoice={invoice} />

@@ -2,7 +2,12 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { createInvoice, type NewItemInput } from "@/app/invoices/actions";
+import {
+  createInvoice,
+  updateInvoice,
+  type InvoiceFormInput,
+  type NewItemInput,
+} from "@/app/invoices/actions";
 
 function emptyItem(): NewItemInput {
   return { description: "", item_serial: "", qty: 1, rate: 0 };
@@ -13,16 +18,34 @@ const inputClass =
 const labelClass = "mb-1.5 block text-xs font-medium text-slate-600";
 const cardClass = "rounded-xl border border-slate-200 bg-white p-5 shadow-sm";
 
-export function NewInvoiceForm() {
-  const [items, setItems] = useState<NewItemInput[]>([emptyItem()]);
-  const [customerName, setCustomerName] = useState("");
-  const [customerPhone, setCustomerPhone] = useState("");
-  const [customerAddress, setCustomerAddress] = useState("");
+export type InvoiceFormValues = {
+  invoiceDate: string;
+  customerName: string;
+  customerPhone: string;
+  customerAddress: string;
+  orderNo: string;
+  termsOfPayment: string;
+  items: NewItemInput[];
+};
+
+export function InvoiceForm({
+  mode,
+  invoiceId,
+  initialValues,
+}: {
+  mode: "create" | "edit";
+  invoiceId?: string;
+  initialValues?: InvoiceFormValues;
+}) {
+  const [items, setItems] = useState<NewItemInput[]>(initialValues?.items ?? [emptyItem()]);
+  const [customerName, setCustomerName] = useState(initialValues?.customerName ?? "");
+  const [customerPhone, setCustomerPhone] = useState(initialValues?.customerPhone ?? "");
+  const [customerAddress, setCustomerAddress] = useState(initialValues?.customerAddress ?? "");
   const [invoiceDate, setInvoiceDate] = useState(
-    () => new Date().toISOString().slice(0, 10)
+    () => initialValues?.invoiceDate ?? new Date().toISOString().slice(0, 10)
   );
-  const [orderNo, setOrderNo] = useState("");
-  const [termsOfPayment, setTermsOfPayment] = useState("");
+  const [orderNo, setOrderNo] = useState(initialValues?.orderNo ?? "");
+  const [termsOfPayment, setTermsOfPayment] = useState(initialValues?.termsOfPayment ?? "");
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
@@ -54,17 +77,22 @@ export function NewInvoiceForm() {
       return;
     }
 
+    const payload: InvoiceFormInput = {
+      invoice_date: invoiceDate,
+      customer_name: customerName,
+      customer_phone: customerPhone,
+      customer_address: customerAddress,
+      order_no: orderNo,
+      terms_of_payment: termsOfPayment,
+      items,
+    };
+
     startTransition(async () => {
       try {
-        const { id } = await createInvoice({
-          invoice_date: invoiceDate,
-          customer_name: customerName,
-          customer_phone: customerPhone,
-          customer_address: customerAddress,
-          order_no: orderNo,
-          terms_of_payment: termsOfPayment,
-          items,
-        });
+        const { id } =
+          mode === "edit" && invoiceId
+            ? await updateInvoice(invoiceId, payload)
+            : await createInvoice(payload);
         router.push(`/invoices/${id}`);
       } catch (err) {
         if (err instanceof Error) {
@@ -129,7 +157,7 @@ export function NewInvoiceForm() {
         </div>
       </section>
 
-      <details className={`${cardClass} group`}>
+      <details className={`${cardClass} group`} open={Boolean(initialValues?.termsOfPayment)}>
         <summary className="flex cursor-pointer list-none items-center justify-between text-sm font-semibold text-slate-800">
           <SectionHeading step="2" title="Terms of Payment" subtitle="optional" />
           <svg
@@ -241,7 +269,11 @@ export function NewInvoiceForm() {
             disabled={isPending}
             className="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {isPending ? "Saving..." : "Save & Generate Invoice"}
+            {isPending
+              ? "Saving..."
+              : mode === "edit"
+                ? "Save Changes"
+                : "Save & Generate Invoice"}
           </button>
         </div>
       </div>
