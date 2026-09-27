@@ -2,17 +2,38 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { DeleteButton } from "@/app/invoices/[id]/DeleteButton";
 
-export default async function HomePage() {
-  const supabase = await createClient();
-  const { data: invoices } = await supabase
-    .from("invoices")
-    .select("id, invoice_no, invoice_date, customer_name, total_amount")
-    .order("invoice_no", { ascending: false })
-    .limit(50);
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
+  const { q } = await searchParams;
+  const query = (q ?? "").trim();
 
-  const totalRevenue = (invoices ?? []).reduce((s, i) => s + Number(i.total_amount), 0);
-  const invoiceCount = invoices?.length ?? 0;
-  const latestNo = invoices?.[0]?.invoice_no;
+  const supabase = await createClient();
+  const { data: allInvoices } = await supabase
+    .from("invoices")
+    .select("id, invoice_no, invoice_date, customer_name, customer_phone, customer_address, total_amount")
+    .order("invoice_no", { ascending: false })
+    .limit(500);
+
+  const invoices = allInvoices ?? [];
+
+  const totalRevenue = invoices.reduce((s, i) => s + Number(i.total_amount), 0);
+  const invoiceCount = invoices.length;
+  const latestNo = invoices[0]?.invoice_no;
+
+  const needle = query.toLowerCase();
+  const filtered = query
+    ? invoices.filter((inv) => {
+        return (
+          inv.customer_name.toLowerCase().includes(needle) ||
+          (inv.customer_phone ?? "").toLowerCase().includes(needle) ||
+          (inv.customer_address ?? "").toLowerCase().includes(needle) ||
+          String(inv.invoice_no).includes(needle)
+        );
+      })
+    : invoices.slice(0, 50);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
@@ -33,19 +54,47 @@ export default async function HomePage() {
       </div>
 
       <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-        <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-          <h2 className="text-sm font-semibold text-slate-800">Recent Invoices</h2>
-          <Link
-            href="/invoices/new"
-            className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
-          >
-            + New Sale
-          </Link>
+        <div className="flex flex-col gap-3 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <h2 className="text-sm font-semibold text-slate-800">
+            {query ? `Search Results (${filtered.length})` : "Recent Invoices"}
+          </h2>
+          <div className="flex items-center gap-3">
+            <form action="/" method="GET" className="relative">
+              <svg
+                className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <circle cx="11" cy="11" r="7" />
+                <path d="m21 21-4.3-4.3" strokeLinecap="round" />
+              </svg>
+              <input
+                type="text"
+                name="q"
+                defaultValue={query}
+                placeholder="Search name, mobile, invoice no..."
+                className="w-64 rounded-lg border border-slate-300 bg-white py-1.5 pl-8 pr-3 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+              />
+            </form>
+            {query && (
+              <Link href="/" className="text-xs font-medium text-slate-500 hover:text-slate-700">
+                Clear
+              </Link>
+            )}
+            <Link
+              href="/invoices/new"
+              className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
+            >
+              + New Sale
+            </Link>
+          </div>
         </div>
 
-        {invoices && invoices.length > 0 ? (
+        {filtered.length > 0 ? (
           <ul className="divide-y divide-slate-100">
-            {invoices.map((inv) => (
+            {filtered.map((inv) => (
               <li
                 key={inv.id}
                 className="flex items-center justify-between gap-4 px-5 py-4 transition hover:bg-slate-50"
@@ -61,6 +110,7 @@ export default async function HomePage() {
                       month: "short",
                       year: "numeric",
                     })}
+                    {inv.customer_phone && ` · ${inv.customer_phone}`}
                   </p>
                 </Link>
                 <span className="shrink-0 text-sm font-semibold text-slate-900">
@@ -78,6 +128,14 @@ export default async function HomePage() {
               </li>
             ))}
           </ul>
+        ) : query ? (
+          <div className="flex flex-col items-center gap-2 px-5 py-16 text-center">
+            <p className="text-sm font-medium text-slate-700">No invoices match &quot;{query}&quot;</p>
+            <p className="text-sm text-slate-500">Try a different name, phone number, or invoice no.</p>
+            <Link href="/" className="mt-2 text-sm font-medium text-indigo-600 hover:text-indigo-500">
+              Clear search
+            </Link>
+          </div>
         ) : (
           <div className="flex flex-col items-center gap-3 px-5 py-16 text-center">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-50 text-indigo-600">
