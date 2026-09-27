@@ -18,139 +18,154 @@ function formatMoney(value: number): string {
   });
 }
 
-const td = "border border-black align-top p-3";
-// Bold black section labels (INVOICE NO, DATE, TO (BILL TO), ...).
-const metaLabel = "block text-[10px] font-semibold uppercase tracking-wide text-black";
-// Plain company detail lines — must stay normal case, solid black (not gray).
-const detail = "text-xs text-black leading-snug";
-
 export function InvoiceDocument({ invoice }: { invoice: Invoice }) {
   return (
-    <div className="mx-auto w-full max-w-[800px] border border-black bg-white text-black font-serif text-sm print:max-w-none">
-      <div className="border-b border-black py-3 text-center">
-        <h1 className="text-2xl font-bold tracking-wide underline underline-offset-4">
+    <div
+      id="invoice"
+      className="mx-auto min-h-[297mm] w-[210mm] bg-white p-[8mm] text-black shadow-xl print:min-h-0 print:w-full print:p-[8mm] print:shadow-none"
+    >
+      {/* Header */}
+      <div className="mb-6 text-center">
+        <h1 className="inline-block border-b-2 border-black px-1 pb-1 text-[22px] font-bold tracking-[3px]">
           INVOICE
         </h1>
       </div>
 
-      <table className="w-full border-collapse">
-        <tbody>
-          {/* Company block + invoice meta */}
-          <tr>
-            <td className={`${td} border-l-0`} style={{ width: "60%" }}>
-              <p className="text-lg font-bold leading-tight">{COMPANY.name}</p>
-              <p className="text-lg font-bold leading-tight">{COMPANY.city}</p>
-              <p className={`${detail} mt-2`}>GST NO.: {COMPANY.gstNo}</p>
-              <p className={detail}>{COMPANY.stateCode}</p>
-              <p className={detail}>E-mail: {COMPANY.email}</p>
-              <p className={detail}>Mobile No: {COMPANY.mobiles}</p>
-            </td>
-            <td className={`${td} border-r-0 border-t-0 p-0`} style={{ width: "40%" }}>
-              <div className="border-b border-black p-3">
-                <span className={metaLabel}>Invoice No</span>
-                <p className="font-bold">{invoice.invoice_no}</p>
-              </div>
-              <div className="border-b border-black p-3">
-                <span className={metaLabel}>Date</span>
-                <p className="font-bold">{formatDate(invoice.invoice_date)}</p>
-              </div>
-              <div className="border-b border-black p-3">
-                <span className={metaLabel}>Order No.</span>
-                {invoice.order_no && <p>{invoice.order_no}</p>}
-              </div>
-              <div className="p-3">
-                <span className={metaLabel}>Terms of Payment</span>
-                {invoice.terms_of_payment && <p>{invoice.terms_of_payment}</p>}
-              </div>
-            </td>
-          </tr>
+      {/* Seller and Invoice Details */}
+      <div className="grid grid-cols-[58%_42%] border-2 border-black">
+        <div className="min-h-[63mm] border-r-2 border-black p-4">
+          <h2 className="text-[20px] font-bold leading-6">{COMPANY.name}</h2>
+          <p className="text-[16px] font-semibold">{COMPANY.city}</p>
 
-          {/* Bill to */}
-          <tr>
-            <td className={`${td} border-x-0`} colSpan={2}>
-              <span className={metaLabel}>To (Bill To)</span>
-              <p className="mt-1 font-bold">{invoice.customer_name}</p>
-              {invoice.customer_phone && <p>{invoice.customer_phone}</p>}
-              {invoice.customer_address && <p>{invoice.customer_address}</p>}
-            </td>
-          </tr>
+          <div className="mt-2 space-y-1 text-[11px] text-gray-800">
+            <p>GST NO.: {COMPANY.gstNo}</p>
+            <p>{COMPANY.stateCode}</p>
+            <p>E-mail: {COMPANY.email}</p>
+            <p>Mobile No: {COMPANY.mobiles}</p>
+          </div>
+        </div>
 
-          {/* Items table header */}
-          <tr>
-            <td className={`${td} border-l-0 text-center font-semibold`} style={{ width: "6%" }}>
-              S.N
-            </td>
-            <td className={`${td} text-center font-semibold`}>Description</td>
-            <td className={`${td} text-center font-semibold`} style={{ width: "9%" }}>
-              QTY
-            </td>
-            <td className={`${td} text-center font-semibold`} style={{ width: "22%" }}>
-              Rate
-              <br />
-              <span className="whitespace-nowrap text-xs font-normal">(GST 18% Incl.)</span>
-            </td>
-            <td className={`${td} border-r-0 text-center font-semibold`} style={{ width: "16%" }}>
-              Amount
-            </td>
-          </tr>
+        <div className="text-[12px]">
+          <div className="min-h-[15mm] border-b border-black p-2">
+            <p className="text-[10px]">INVOICE NO</p>
+            <p className="mt-1 font-semibold">{invoice.invoice_no}</p>
+          </div>
 
-          {invoice.invoice_items.map((item) => (
-            <tr key={item.id}>
-              <td className={`${td} border-l-0 text-center`}>{item.sno}</td>
-              <td className={td}>
-                {item.description}
-                {item.item_serial && (
-                  <>
-                    <br />
-                    <span className="text-xs">(S.NO- {item.item_serial})</span>
-                  </>
-                )}
-              </td>
-              <td className={`${td} text-center`}>{item.qty}</td>
-              <td className={`${td} text-right`}>{formatMoney(item.rate)}</td>
-              <td className={`${td} border-r-0 text-right`}>{formatMoney(item.amount)}</td>
+          <div className="min-h-[15mm] border-b border-black p-2">
+            <p className="text-[10px]">DATE</p>
+            <p className="mt-1 font-semibold">{formatDate(invoice.invoice_date)}</p>
+          </div>
+
+          <div className="min-h-[15mm] border-b border-black p-2">
+            <p className="text-[10px]">Order No.</p>
+            {invoice.order_no && <p className="mt-1 font-semibold">{invoice.order_no}</p>}
+          </div>
+
+          <div className="flex min-h-[18mm] flex-col justify-center p-2">
+            <p className="text-[10px]">Terms of Payment</p>
+            {invoice.terms_of_payment && (
+              <p className="mt-1 font-semibold">{invoice.terms_of_payment}</p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Bill To */}
+      <div className="mt-2 border-2 border-black p-4">
+        <p className="mb-2 text-[12px]">TO (Bill To)</p>
+
+        <div className="space-y-2 text-[13px]">
+          <p className="font-semibold">{invoice.customer_name}</p>
+          {invoice.customer_phone && <p>{invoice.customer_phone}</p>}
+          {invoice.customer_address && <p className="font-semibold">{invoice.customer_address}</p>}
+        </div>
+      </div>
+
+      {/* Items Table */}
+      <div className="mt-2">
+        <table className="w-full table-fixed border-collapse text-[12px]">
+          <thead>
+            <tr className="h-[15mm]">
+              <th className="w-[5.5%] border border-black px-1">S.N</th>
+              <th className="w-[49%] border border-black px-2">Description</th>
+              <th className="w-[15%] border border-black px-1">QTY</th>
+              <th className="w-[20%] border border-black px-1">
+                <div>Rate</div>
+                <div className="mt-1 text-[10px] font-normal">(GST 18% Incl.)</div>
+              </th>
+              <th className="w-[10.5%] border border-black px-1">Amount</th>
             </tr>
-          ))}
+          </thead>
 
-          {/* Totals */}
-          <tr>
-            <td className={`${td} border-x-0 border-t-2`} style={{ width: "60%" }}>
-              <span className={metaLabel}>Amount in words</span>
-              <p className="mt-1 font-bold uppercase">{invoice.amount_in_words}</p>
-            </td>
-            <td className={`${td} border-r-0 border-t-2 text-right`} style={{ width: "40%" }}>
-              <span className={metaLabel}>Grand Total:</span>
-              <p className="text-2xl font-bold">{formatMoney(invoice.total_amount)}</p>
-            </td>
-          </tr>
+          <tbody>
+            {invoice.invoice_items.map((item) => (
+              <tr key={item.id} className="h-[17mm]">
+                <td className="border border-black text-center">{item.sno}</td>
+                <td className="border border-black px-3">
+                  {item.description}
+                  {item.item_serial && (
+                    <span className="block text-[10px] text-gray-600">
+                      (S.NO- {item.item_serial})
+                    </span>
+                  )}
+                </td>
+                <td className="border border-black text-center">{item.qty}</td>
+                <td className="border border-black px-2 text-right">{formatMoney(item.rate)}</td>
+                <td className="border border-black px-2 text-right">{formatMoney(item.amount)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-          {/* Footer */}
-          <tr>
-            <td className={`${td} border-x-0 border-b-0`} colSpan={2}>
-              <div className="flex justify-between gap-6">
-                <p className="text-xs leading-relaxed">
-                  We declare that this invoice shows the actual price of the goods
-                  described and that all particulars are true and correct.
-                  <br />
-                  <span className="font-bold">Bank of Baroda A/c. No.: {COMPANY.accountNo}</span>
-                  <br />
-                  <span className="font-bold">IFSC Code: {COMPANY.ifsc}</span>
-                  <br />
-                  <span className="font-bold">PAN NO.: {COMPANY.panNo}</span>
-                </p>
-                <div className="shrink-0 text-center text-xs">
-                  <p>
-                    For <span className="font-bold">{COMPANY.name}</span>
-                  </p>
-                  <p className="mt-10 border-t border-dotted border-black pt-1">
-                    Authorised Signatory
-                  </p>
-                </div>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      {/* Amount in Words and Total */}
+      <div className="mt-2 grid grid-cols-[66%_34%] border-2 border-black">
+        <div className="min-h-[24mm] border-r-2 border-black p-4">
+          <p className="text-[12px] text-gray-600">Amount in words</p>
+          <p className="mt-2 text-[12px] font-bold">{invoice.amount_in_words}</p>
+        </div>
+
+        <div className="flex items-center justify-between gap-2 p-4">
+          <p className="text-[13px] font-bold leading-5">
+            Grand
+            <br />
+            Total:
+          </p>
+          <p className="border-b-4 border-gray-400 px-2 pb-1 text-[28px] font-bold leading-none">
+            {formatMoney(invoice.total_amount)}
+          </p>
+        </div>
+      </div>
+
+      {/* Declaration and Signature */}
+      <div className="mt-2 grid grid-cols-[66%_34%] border-2 border-black">
+        <div className="min-h-[43mm] border-r-2 border-black p-4">
+          <p className="text-[12px] leading-5">
+            We declare that this invoice shows the actual price of the goods described
+            and that all particulars are true and correct.
+          </p>
+
+          <div className="mt-2 space-y-1 text-[11px]">
+            <p>
+              <strong>Bank of Baroda A/c. No:</strong> {COMPANY.accountNo}
+            </p>
+            <p>
+              <strong>IFSC Code:</strong> {COMPANY.ifsc}
+            </p>
+            <p>
+              <strong>PAN NO.:</strong> {COMPANY.panNo}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex min-h-[43mm] flex-col justify-between p-4 text-center">
+          <p className="text-[12px]">
+            For <strong>{COMPANY.name}</strong>
+          </p>
+          <div className="mx-1 border-b border-dotted border-black" />
+          <p className="text-[12px]">Authorised Signatory</p>
+        </div>
+      </div>
     </div>
   );
 }

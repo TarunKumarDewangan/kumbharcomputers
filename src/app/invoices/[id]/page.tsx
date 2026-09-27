@@ -27,19 +27,15 @@ export default async function InvoiceViewPage({
   const invoice = data as unknown as Invoice;
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
-      <div className="mb-6 flex items-center justify-between print:hidden">
-        <Link
-          href="/"
-          className="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100"
-        >
+    <main className="min-h-screen bg-gray-200 py-8 print:bg-white print:p-0">
+      <div className="mx-auto mb-4 flex max-w-[210mm] items-center justify-between px-4 print:hidden">
+        <Link href="/" className="text-sm font-medium text-slate-700 hover:underline">
           ← Back to invoices
         </Link>
         <PrintButton />
       </div>
-      <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm print:rounded-none print:border-none print:p-0 print:shadow-none sm:p-10">
-        <InvoiceDocument invoice={invoice} />
-      </div>
-    </div>
+
+      <InvoiceDocument invoice={invoice} />
+    </main>
   );
 }

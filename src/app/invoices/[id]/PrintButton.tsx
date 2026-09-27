@@ -4,9 +4,9 @@ export function PrintButton() {
   return (
     <button
       onClick={() => window.print()}
-      className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500"
+      className="rounded bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-700"
     >
-      Print / Save as PDF
+      Print Invoice
     </button>
   );
 }
