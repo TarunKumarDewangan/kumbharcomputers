@@ -48,3 +48,13 @@ export type StockEntry = {
   entry_date: string;
   created_at: string;
 };
+
+export type Purchase = {
+  id: string;
+  purchase_date: string;
+  product_name: string;
+  description: string | null;
+  quantity: number;
+  total_price: number;
+  created_at: string;
+};

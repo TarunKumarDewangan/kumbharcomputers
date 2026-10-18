@@ -40,6 +40,13 @@ export function NavBar() {
             Stock
           </Link>
           <Link
+            href="/purchases"
+            prefetch={false}
+            className="shrink-0 whitespace-nowrap rounded-lg px-2 py-1.5 text-xs font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 sm:px-3 sm:py-2 sm:text-sm"
+          >
+            Purchases
+          </Link>
+          <Link
             href="/invoices/new"
             className="ml-0.5 shrink-0 whitespace-nowrap rounded-lg bg-indigo-600 px-2.5 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-indigo-500 sm:ml-1 sm:px-3.5 sm:py-2 sm:text-sm"
           >
