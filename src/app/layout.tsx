@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { NavBar } from "@/components/NavBar";
 import { RegisterServiceWorker } from "@/components/RegisterServiceWorker";
+import { InstallPwaBanner } from "@/components/InstallPwaBanner";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -47,6 +48,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col bg-slate-50">
         <RegisterServiceWorker />
         <NavBar />
+        <InstallPwaBanner />
         <main className="flex-1">{children}</main>
       </body>
     </html>
