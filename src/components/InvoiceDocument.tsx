@@ -18,7 +18,33 @@ function formatMoney(value: number): string {
   });
 }
 
+// Fixed sections (header, seller/invoice box, bill-to, totals, declaration) take up a
+// known chunk of the A4 page. Whatever's left is the budget for the items table, so when
+// there are more rows than the "designed for" count, shrink row height/font to keep the
+// whole invoice on one printed page instead of spilling onto a second.
+const ITEMS_AREA_MM = 98;
+const TABLE_HEADER_MM = 15;
+const DESIGNED_ROW_MM = 17;
+const MIN_ROW_MM = 7;
+const MIN_FONT_PX = 9;
+const BASE_FONT_PX = 12;
+
+function getTableSizing(itemCount: number) {
+  if (itemCount <= 0) {
+    return { rowMm: DESIGNED_ROW_MM, headerMm: TABLE_HEADER_MM, fontPx: BASE_FONT_PX };
+  }
+  const available = ITEMS_AREA_MM - TABLE_HEADER_MM;
+  const fitRowMm = available / itemCount;
+  const rowMm = Math.max(MIN_ROW_MM, Math.min(DESIGNED_ROW_MM, fitRowMm));
+  const scale = rowMm / DESIGNED_ROW_MM;
+  const fontPx = Math.max(MIN_FONT_PX, Math.round(BASE_FONT_PX * scale));
+  const headerMm = rowMm < DESIGNED_ROW_MM ? Math.max(10, TABLE_HEADER_MM * scale) : TABLE_HEADER_MM;
+  return { rowMm, headerMm, fontPx };
+}
+
 export function InvoiceDocument({ invoice }: { invoice: Invoice }) {
+  const { rowMm, headerMm, fontPx } = getTableSizing(invoice.invoice_items.length);
+
   return (
     <div
       id="invoice"
@@ -83,15 +109,18 @@ export function InvoiceDocument({ invoice }: { invoice: Invoice }) {
 
       {/* Items Table */}
       <div className="mt-2">
-        <table className="w-full table-fixed border-collapse text-[12px]">
+        <table
+          className="w-full table-fixed border-collapse"
+          style={{ fontSize: `${fontPx}px` }}
+        >
           <thead>
-            <tr className="h-[15mm]">
+            <tr style={{ height: `${headerMm}mm` }}>
               <th className="w-[5.5%] border border-black px-1">S.N</th>
               <th className="w-[49%] border border-black px-2">Description</th>
               <th className="w-[15%] border border-black px-1">QTY</th>
               <th className="w-[20%] border border-black px-1">
                 <div>Rate</div>
-                <div className="mt-1 text-[10px] font-normal">(GST 18% Incl.)</div>
+                <div className="mt-1 text-[0.8em] font-normal">(GST 18% Incl.)</div>
               </th>
               <th className="w-[10.5%] border border-black px-1">Amount</th>
             </tr>
@@ -99,12 +128,12 @@ export function InvoiceDocument({ invoice }: { invoice: Invoice }) {
 
           <tbody>
             {invoice.invoice_items.map((item) => (
-              <tr key={item.id} className="h-[17mm]">
+              <tr key={item.id} style={{ height: `${rowMm}mm` }}>
                 <td className="border border-black text-center">{item.sno}</td>
                 <td className="border border-black px-3">
                   {item.description}
                   {item.item_serial && (
-                    <span className="block text-[10px] text-gray-600">
+                    <span className="block text-[0.85em] text-gray-600">
                       (S.NO- {item.item_serial})
                     </span>
                   )}
