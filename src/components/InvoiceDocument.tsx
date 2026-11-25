@@ -48,22 +48,22 @@ export function InvoiceDocument({ invoice }: { invoice: Invoice }) {
   return (
     <div
       id="invoice"
-      className="mx-auto min-h-[297mm] w-[210mm] bg-white p-[8mm] text-black shadow-xl print:min-h-0 print:w-full print:p-[8mm] print:shadow-none"
+      className="mx-auto min-h-[297mm] w-[210mm] bg-white p-[8mm] text-black shadow-xl print:min-h-0 print:w-full print:p-[8mm] print:shadow-none font-[family-name:var(--font-geist-sans)] antialiased"
     >
       {/* Header */}
-      <div className="mb-6 text-center">
-        <h1 className="inline-block border-b-2 border-black px-1 pb-1 text-[22px] font-bold tracking-[3px]">
+      <div className="mb-3 text-center">
+        <h1 className="inline-block border-b-2 border-black px-1 pb-0.5 text-[20px] font-bold tracking-[2px]">
           INVOICE
         </h1>
       </div>
 
       {/* Seller and Invoice Details */}
       <div className="grid grid-cols-[58%_42%] border-2 border-black">
-        <div className="min-h-[63mm] border-r-2 border-black p-4">
-          <h2 className="text-[20px] font-bold leading-6">{COMPANY.name}</h2>
-          <p className="text-[16px] font-semibold">{COMPANY.city}</p>
+        <div className="border-r-2 border-black p-3">
+          <h2 className="text-[17px] font-bold leading-5">{COMPANY.name}</h2>
+          <p className="text-[13px] font-semibold text-gray-700">{COMPANY.city}</p>
 
-          <div className="mt-2 space-y-1 text-[11px] text-gray-800">
+          <div className="mt-1.5 space-y-0.5 text-[10.5px] leading-[1.5] text-gray-700">
             <p>GST NO.: {COMPANY.gstNo}</p>
             <p>{COMPANY.stateCode}</p>
             <p>E-mail: {COMPANY.email}</p>
@@ -71,38 +71,38 @@ export function InvoiceDocument({ invoice }: { invoice: Invoice }) {
           </div>
         </div>
 
-        <div className="text-[12px]">
-          <div className="min-h-[15mm] border-b border-black p-2">
-            <p className="text-[10px]">INVOICE NO</p>
-            <p className="mt-1 font-semibold">{invoice.invoice_no}</p>
+        <div className="text-[11px]">
+          <div className="min-h-[10mm] border-b border-black p-1.5">
+            <p className="text-[9px] text-gray-600">INVOICE NO</p>
+            <p className="mt-0.5 font-semibold">{invoice.invoice_no}</p>
           </div>
 
-          <div className="min-h-[15mm] border-b border-black p-2">
-            <p className="text-[10px]">DATE</p>
-            <p className="mt-1 font-semibold">{formatDate(invoice.invoice_date)}</p>
+          <div className="min-h-[10mm] border-b border-black p-1.5">
+            <p className="text-[9px] text-gray-600">DATE</p>
+            <p className="mt-0.5 font-semibold">{formatDate(invoice.invoice_date)}</p>
           </div>
 
-          <div className="min-h-[15mm] border-b border-black p-2">
-            <p className="text-[10px]">Order No.</p>
-            {invoice.order_no && <p className="mt-1 font-semibold">{invoice.order_no}</p>}
+          <div className="min-h-[10mm] border-b border-black p-1.5">
+            <p className="text-[9px] text-gray-600">Order No.</p>
+            {invoice.order_no && <p className="mt-0.5 font-semibold">{invoice.order_no}</p>}
           </div>
 
-          <div className="flex min-h-[18mm] flex-col justify-center p-2">
-            <p className="text-[10px]">Terms of Payment</p>
+          <div className="flex min-h-[10mm] flex-col justify-center p-1.5">
+            <p className="text-[9px] text-gray-600">Terms of Payment</p>
             {invoice.terms_of_payment && (
-              <p className="mt-1 font-semibold">{invoice.terms_of_payment}</p>
+              <p className="mt-0.5 font-semibold">{invoice.terms_of_payment}</p>
             )}
           </div>
         </div>
       </div>
 
       {/* Bill To */}
-      <div className="mt-2 border-2 border-black p-4">
-        <p className="mb-2 text-[12px]">TO (Bill To)</p>
+      <div className="mt-2 border-2 border-black p-2.5">
+        <p className="mb-1 text-[10.5px] text-gray-600">TO (Bill To)</p>
 
-        <div className="space-y-2 text-[13px]">
+        <div className="space-y-0.5 text-[12px] leading-[1.45]">
           <p className="font-semibold">{invoice.customer_name}</p>
-          {invoice.customer_phone && <p>{invoice.customer_phone}</p>}
+          {invoice.customer_phone && <p className="text-gray-800">{invoice.customer_phone}</p>}
           {invoice.customer_address && <p className="font-semibold">{invoice.customer_address}</p>}
         </div>
       </div>
