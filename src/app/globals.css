@@ -18,8 +18,12 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Printed on landscape A4, the receipt fills only the left half of the sheet
+   (a vertical left/right split, not a horizontal top/bottom one) so it comes
+   out at half-page size — the right half stays blank for a second copy or to
+   be cut away. */
 @page {
-  size: A4 portrait;
+  size: A4 landscape;
   margin: 0;
 }
 
@@ -34,9 +38,9 @@ body {
   }
 
   #invoice {
-    width: 210mm !important;
-    min-height: 0 !important;
-    margin: 0 auto !important;
+    width: 148.5mm !important;
+    min-height: 210mm !important;
+    margin: 0 !important;
     box-shadow: none !important;
     page-break-after: avoid;
     break-after: avoid;
