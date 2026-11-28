@@ -19,10 +19,15 @@ function emptyItem(): NewPurchaseItemInput {
   return { product_name: "", quantity: 1, unit_price: 0 };
 }
 
+const GST_OPTIONS = [5, 12, 18];
+
 export type PurchaseFormValues = {
   purchaseDate: string;
   notes: string;
   items: NewPurchaseItemInput[];
+  gstApplicable: boolean;
+  gstPercent: number | null;
+  paidAmount: number;
 };
 
 export function PurchaseForm({
@@ -39,6 +44,9 @@ export function PurchaseForm({
   );
   const [notes, setNotes] = useState(initialValues?.notes ?? "");
   const [items, setItems] = useState<NewPurchaseItemInput[]>(initialValues?.items ?? [emptyItem()]);
+  const [gstApplicable, setGstApplicable] = useState(initialValues?.gstApplicable ?? false);
+  const [gstPercent, setGstPercent] = useState<number | null>(initialValues?.gstPercent ?? null);
+  const [paidAmount, setPaidAmount] = useState(initialValues?.paidAmount ?? 0);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
@@ -65,8 +73,19 @@ export function PurchaseForm({
       setError("Add at least one item with a product name.");
       return;
     }
+    if (gstApplicable && !gstPercent) {
+      setError("Select a GST percentage.");
+      return;
+    }
 
-    const payload: PurchaseFormInput = { purchaseDate, notes, items };
+    const payload: PurchaseFormInput = {
+      purchaseDate,
+      notes,
+      items,
+      gstApplicable,
+      gstPercent,
+      paidAmount,
+    };
 
     startTransition(async () => {
       try {
@@ -112,6 +131,92 @@ export function PurchaseForm({
             />
           </div>
         </div>
+      </section>
+
+      <section className={cardClass}>
+        <h2 className="text-sm font-semibold text-slate-800">Amount Paid</h2>
+
+        <label className="mt-3 flex items-center gap-2 text-sm text-slate-700">
+          <input
+            type="checkbox"
+            checked={gstApplicable}
+            onChange={(e) => {
+              setGstApplicable(e.target.checked);
+              if (!e.target.checked) setGstPercent(null);
+            }}
+            className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+          />
+          Price includes GST
+        </label>
+
+        {gstApplicable ? (
+          <div className="mt-3 space-y-3">
+            <div>
+              <label className={labelClass}>GST %</label>
+              <div className="flex gap-2">
+                {GST_OPTIONS.map((pct) => (
+                  <button
+                    key={pct}
+                    type="button"
+                    onClick={() => setGstPercent(pct)}
+                    className={`rounded-lg border px-4 py-2 text-sm font-semibold transition ${
+                      gstPercent === pct
+                        ? "border-indigo-600 bg-indigo-600 text-white"
+                        : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+                    }`}
+                  >
+                    {pct}%
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <label className={labelClass}>Total Amount (incl. GST) *</label>
+              <input
+                type="number"
+                min={0}
+                step="0.01"
+                className={inputClass}
+                value={paidAmount}
+                onChange={(e) => setPaidAmount(Number(e.target.value))}
+              />
+            </div>
+            {gstPercent && paidAmount > 0 && (
+              <div className="grid grid-cols-2 gap-3 rounded-lg bg-slate-50 p-3 text-sm">
+                <div>
+                  <p className="text-xs text-slate-500">Product Rate (excl. GST)</p>
+                  <p className="font-semibold text-slate-800">
+                    ₹
+                    {(paidAmount / (1 + gstPercent / 100)).toLocaleString("en-IN", {
+                      minimumFractionDigits: 2,
+                    })}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500">GST Amount ({gstPercent}%)</p>
+                  <p className="font-semibold text-slate-800">
+                    ₹
+                    {(paidAmount - paidAmount / (1 + gstPercent / 100)).toLocaleString("en-IN", {
+                      minimumFractionDigits: 2,
+                    })}
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="mt-3">
+            <label className={labelClass}>Total Amount *</label>
+            <input
+              type="number"
+              min={0}
+              step="0.01"
+              className={inputClass}
+              value={paidAmount}
+              onChange={(e) => setPaidAmount(Number(e.target.value))}
+            />
+          </div>
+        )}
       </section>
 
       <section className={cardClass}>

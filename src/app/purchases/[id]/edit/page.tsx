@@ -57,6 +57,9 @@ export default async function EditPurchasePage({
             quantity: i.quantity,
             unit_price: i.unit_price,
           })),
+          gstApplicable: purchase.gst_applicable,
+          gstPercent: purchase.gst_percent,
+          paidAmount: purchase.paid_amount,
         }}
       />
     </div>

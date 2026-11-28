@@ -13,13 +13,26 @@ export type PurchaseFormInput = {
   purchaseDate: string;
   notes: string;
   items: NewPurchaseItemInput[];
+  gstApplicable: boolean;
+  gstPercent: number | null;
+  paidAmount: number;
 };
 
 function buildOrderRow(input: PurchaseFormInput, totalPrice: number) {
+  const gstApplicable = input.gstApplicable && Boolean(input.gstPercent);
+  const gstPercent = gstApplicable ? input.gstPercent : null;
+  const taxableAmount = gstApplicable && gstPercent ? input.paidAmount / (1 + gstPercent / 100) : null;
+  const gstAmount = taxableAmount !== null ? input.paidAmount - taxableAmount : null;
+
   return {
     purchase_date: input.purchaseDate || new Date().toISOString().slice(0, 10),
     notes: input.notes.trim() || null,
     total_price: totalPrice,
+    gst_applicable: gstApplicable,
+    gst_percent: gstPercent,
+    paid_amount: input.paidAmount,
+    taxable_amount: taxableAmount,
+    gst_amount: gstAmount,
   };
 }
 

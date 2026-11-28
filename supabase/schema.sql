@@ -84,11 +84,18 @@ alter table public.stock_entries enable row level security;
 create policy "allow all on stock_entries" on public.stock_entries for all using (true) with check (true);
 
 -- Purchase ledger: one order (date + notes) made up of multiple line items.
+-- gst_* / paid_amount hold the actual amount paid and its optional GST breakdown,
+-- entered separately from (and independent of) the items' own summed total_price.
 create table if not exists public.purchase_orders (
   id uuid primary key default gen_random_uuid(),
   purchase_date date not null default current_date,
   notes text,
   total_price numeric(12, 2) not null default 0,
+  gst_applicable boolean not null default false,
+  gst_percent numeric(5, 2),
+  paid_amount numeric(12, 2) not null default 0,
+  taxable_amount numeric(12, 2),
+  gst_amount numeric(12, 2),
   created_at timestamptz not null default now()
 );
 

@@ -63,6 +63,11 @@ export type PurchaseOrder = {
   purchase_date: string;
   notes: string | null;
   total_price: number;
+  gst_applicable: boolean;
+  gst_percent: number | null;
+  paid_amount: number;
+  taxable_amount: number | null;
+  gst_amount: number | null;
   created_at: string;
   purchase_items: PurchaseItem[];
 };

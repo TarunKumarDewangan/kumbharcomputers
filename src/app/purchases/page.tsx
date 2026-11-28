@@ -13,13 +13,15 @@ export default async function PurchasesPage({
   const supabase = await createClient();
   const { data: allPurchases } = await supabase
     .from("purchase_orders")
-    .select("id, purchase_date, notes, total_price, purchase_items(product_name)")
+    .select(
+      "id, purchase_date, notes, total_price, paid_amount, gst_applicable, gst_percent, purchase_items(product_name)"
+    )
     .order("purchase_date", { ascending: false })
     .order("created_at", { ascending: false })
     .limit(500);
 
   const purchases = allPurchases ?? [];
-  const totalSpent = purchases.reduce((s, p) => s + Number(p.total_price), 0);
+  const totalSpent = purchases.reduce((s, p) => s + Number(p.paid_amount || p.total_price), 0);
 
   const needle = query.toLowerCase();
   const filtered = query
@@ -104,7 +106,14 @@ export default async function PurchasesPage({
                   </div>
                   <div className="flex items-center justify-between gap-2 sm:shrink-0 sm:justify-end">
                     <span className="text-sm font-semibold text-slate-900">
-                      ₹{Number(p.total_price).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+                      ₹{Number(p.paid_amount || p.total_price).toLocaleString("en-IN", {
+                        minimumFractionDigits: 2,
+                      })}
+                      {p.gst_applicable && p.gst_percent && (
+                        <span className="ml-1 rounded bg-indigo-50 px-1.5 py-0.5 text-[10px] font-semibold text-indigo-600">
+                          GST {p.gst_percent}%
+                        </span>
+                      )}
                     </span>
                     <div className="flex shrink-0 items-center gap-1">
                       <Link
