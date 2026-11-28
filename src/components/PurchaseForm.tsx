@@ -188,7 +188,7 @@ export function PurchaseForm({
                   <p className="font-semibold text-slate-800">
                     ₹
                     {(paidAmount / (1 + gstPercent / 100)).toLocaleString("en-IN", {
-                      minimumFractionDigits: 2,
+                      minimumFractionDigits: 2, maximumFractionDigits: 2,
                     })}
                   </p>
                 </div>
@@ -197,7 +197,7 @@ export function PurchaseForm({
                   <p className="font-semibold text-slate-800">
                     ₹
                     {(paidAmount - paidAmount / (1 + gstPercent / 100)).toLocaleString("en-IN", {
-                      minimumFractionDigits: 2,
+                      minimumFractionDigits: 2, maximumFractionDigits: 2,
                     })}
                   </p>
                 </div>
@@ -248,7 +248,7 @@ export function PurchaseForm({
           <div className="min-w-0">
             <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Total</p>
             <p className="truncate text-base font-bold text-slate-900 sm:text-lg">
-              ₹{total.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+              ₹{total.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </p>
           </div>
           <button
@@ -352,7 +352,7 @@ function PurchaseItemRow({
       </div>
       <div className="flex items-center justify-between sm:col-span-3 sm:flex-col sm:items-end sm:gap-1">
         <span className="text-xs font-semibold text-slate-700">
-          ₹{(item.quantity * item.unit_price).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+          ₹{(item.quantity * item.unit_price).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </span>
         {onRemove && (
           <button

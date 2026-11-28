@@ -51,7 +51,7 @@ export default async function PurchasesPage({
         <StatCard label="Total Purchases" value={purchases.length.toString()} />
         <StatCard
           label="Total Spent"
-          value={`₹${totalSpent.toLocaleString("en-IN", { minimumFractionDigits: 2 })}`}
+          value={`₹${totalSpent.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
         />
       </div>
 
@@ -108,6 +108,7 @@ export default async function PurchasesPage({
                     <span className="text-sm font-semibold text-slate-900">
                       ₹{Number(p.paid_amount || p.total_price).toLocaleString("en-IN", {
                         minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
                       })}
                       {p.gst_applicable && p.gst_percent && (
                         <span className="ml-1 rounded bg-indigo-50 px-1.5 py-0.5 text-[10px] font-semibold text-indigo-600">
