@@ -98,14 +98,23 @@ export function InvoiceDocument({ invoice }: { invoice: Invoice }) {
       </div>
 
       {/* Bill To */}
-      <div className="mt-1.5 border-2 border-black p-1.5">
-        <p className="mb-0.5 text-[8px] text-gray-600">TO (Bill To)</p>
-
-        <div className="space-y-0.5 text-[9px] leading-[1.35]">
-          <p className="font-semibold">{invoice.customer_name}</p>
-          {invoice.customer_phone && <p className="text-gray-800">{invoice.customer_phone}</p>}
-          {invoice.customer_address && <p className="font-semibold">{invoice.customer_address}</p>}
+      <div className="mt-1.5 flex gap-2 border-2 border-black p-1.5">
+        <div className="flex-1 border-r border-black pr-2">
+          <p className="mb-0.5 text-[8px] text-gray-600">TO (Bill To)</p>
+          <div className="space-y-0.5 text-[9px] leading-[1.35]">
+            <p className="font-semibold">{invoice.customer_name}</p>
+            {invoice.customer_address && <p className="font-semibold">{invoice.customer_address}</p>}
+          </div>
         </div>
+
+        {invoice.customer_phone && (
+          <div className="shrink-0">
+            <p className="mb-0.5 text-[8px] text-gray-600">Mobile No</p>
+            <p className="text-[9px] font-semibold leading-[1.35] text-gray-800">
+              {invoice.customer_phone}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Items Table */}
