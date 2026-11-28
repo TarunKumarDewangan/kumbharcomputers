@@ -12,8 +12,8 @@ export default async function PurchasesPage({
 
   const supabase = await createClient();
   const { data: allPurchases } = await supabase
-    .from("purchases")
-    .select("id, purchase_date, product_name, description, quantity, total_price")
+    .from("purchase_orders")
+    .select("id, purchase_date, notes, total_price, purchase_items(product_name)")
     .order("purchase_date", { ascending: false })
     .order("created_at", { ascending: false })
     .limit(500);
@@ -25,8 +25,8 @@ export default async function PurchasesPage({
   const filtered = query
     ? purchases.filter(
         (p) =>
-          p.product_name.toLowerCase().includes(needle) ||
-          (p.description ?? "").toLowerCase().includes(needle)
+          p.purchase_items.some((i) => i.product_name.toLowerCase().includes(needle)) ||
+          (p.notes ?? "").toLowerCase().includes(needle)
       )
     : purchases;
 
@@ -78,40 +78,48 @@ export default async function PurchasesPage({
 
         {filtered.length > 0 ? (
           <ul className="divide-y divide-slate-100">
-            {filtered.map((p) => (
-              <li
-                key={p.id}
-                className="flex flex-col gap-2 px-4 py-4 transition hover:bg-slate-50 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-5"
-              >
-                <div className="min-w-0 sm:flex-1">
-                  <p className="truncate text-sm font-semibold text-slate-900">{p.product_name}</p>
-                  <p className="mt-0.5 text-xs text-slate-500">
-                    {new Date(p.purchase_date).toLocaleDateString("en-IN", {
-                      day: "2-digit",
-                      month: "short",
-                      year: "numeric",
-                    })}
-                    {" · "}Qty: {p.quantity}
-                    {p.description && ` · ${p.description}`}
-                  </p>
-                </div>
-                <div className="flex items-center justify-between gap-2 sm:shrink-0 sm:justify-end">
-                  <span className="text-sm font-semibold text-slate-900">
-                    ₹{Number(p.total_price).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
-                  </span>
-                  <div className="flex shrink-0 items-center gap-1">
-                    <Link
-                      href={`/purchases/${p.id}/edit`}
-                      prefetch={false}
-                      className="rounded px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100"
-                    >
-                      Edit
-                    </Link>
-                    <DeleteButton purchaseId={p.id} productName={p.product_name} />
+            {filtered.map((p) => {
+              const itemNames = p.purchase_items.map((i) => i.product_name);
+              const summary =
+                itemNames.length > 2
+                  ? `${itemNames.slice(0, 2).join(", ")} +${itemNames.length - 2} more`
+                  : itemNames.join(", ") || "No items";
+              return (
+                <li
+                  key={p.id}
+                  className="flex flex-col gap-2 px-4 py-4 transition hover:bg-slate-50 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-5"
+                >
+                  <div className="min-w-0 sm:flex-1">
+                    <p className="truncate text-sm font-semibold text-slate-900">{summary}</p>
+                    <p className="mt-0.5 text-xs text-slate-500">
+                      {new Date(p.purchase_date).toLocaleDateString("en-IN", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                      {" · "}
+                      {itemNames.length} item{itemNames.length === 1 ? "" : "s"}
+                      {p.notes && ` · ${p.notes}`}
+                    </p>
                   </div>
-                </div>
-              </li>
-            ))}
+                  <div className="flex items-center justify-between gap-2 sm:shrink-0 sm:justify-end">
+                    <span className="text-sm font-semibold text-slate-900">
+                      ₹{Number(p.total_price).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+                    </span>
+                    <div className="flex shrink-0 items-center gap-1">
+                      <Link
+                        href={`/purchases/${p.id}/edit`}
+                        prefetch={false}
+                        className="rounded px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100"
+                      >
+                        Edit
+                      </Link>
+                      <DeleteButton purchaseId={p.id} label={summary} />
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         ) : (
           <div className="flex flex-col items-center gap-3 px-5 py-16 text-center">

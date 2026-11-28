@@ -4,12 +4,12 @@ import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { deletePurchase } from "@/app/purchases/actions";
 
-export function DeleteButton({ purchaseId, productName }: { purchaseId: string; productName: string }) {
+export function DeleteButton({ purchaseId, label }: { purchaseId: string; label: string }) {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
   function handleDelete() {
-    if (!window.confirm(`Delete this purchase of "${productName}"? This cannot be undone.`)) {
+    if (!window.confirm(`Delete this purchase (${label})? This cannot be undone.`)) {
       return;
     }
     startTransition(async () => {

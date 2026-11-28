@@ -3,54 +3,96 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
-export type PurchaseFormInput = {
-  purchaseDate: string;
-  productName: string;
-  description: string;
+export type NewPurchaseItemInput = {
+  product_name: string;
   quantity: number;
-  totalPrice: number;
+  unit_price: number;
 };
 
-function buildRow(input: PurchaseFormInput) {
+export type PurchaseFormInput = {
+  purchaseDate: string;
+  notes: string;
+  items: NewPurchaseItemInput[];
+};
+
+function buildOrderRow(input: PurchaseFormInput, totalPrice: number) {
   return {
     purchase_date: input.purchaseDate || new Date().toISOString().slice(0, 10),
-    product_name: input.productName.trim(),
-    description: input.description.trim() || null,
-    quantity: input.quantity,
-    total_price: input.totalPrice,
+    notes: input.notes.trim() || null,
+    total_price: totalPrice,
   };
 }
 
+function buildItemRows(orderId: string, items: NewPurchaseItemInput[]) {
+  return items
+    .filter((item) => item.product_name.trim())
+    .map((item, index) => ({
+      purchase_order_id: orderId,
+      sno: index + 1,
+      product_name: item.product_name.trim(),
+      quantity: item.quantity,
+      unit_price: item.unit_price,
+    }));
+}
+
 export async function createPurchase(input: PurchaseFormInput): Promise<{ id: string }> {
-  if (!input.productName.trim()) {
-    throw new Error("Product name is required.");
+  const validItems = input.items.filter((item) => item.product_name.trim());
+  if (validItems.length === 0) {
+    throw new Error("Add at least one item with a product name.");
   }
 
+  const totalPrice = validItems.reduce((s, i) => s + i.quantity * i.unit_price, 0);
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("purchases")
-    .insert(buildRow(input))
+
+  const { data: order, error: orderError } = await supabase
+    .from("purchase_orders")
+    .insert(buildOrderRow(input, totalPrice))
     .select("id")
     .single();
 
-  if (error || !data) {
-    throw new Error(error?.message ?? "Failed to save purchase.");
+  if (orderError || !order) {
+    throw new Error(orderError?.message ?? "Failed to save purchase.");
+  }
+
+  const { error: itemsError } = await supabase
+    .from("purchase_items")
+    .insert(buildItemRows(order.id, validItems));
+
+  if (itemsError) {
+    await supabase.from("purchase_orders").delete().eq("id", order.id);
+    throw new Error(itemsError.message);
   }
 
   revalidatePath("/purchases");
-  return { id: data.id };
+  return { id: order.id };
 }
 
 export async function updatePurchase(id: string, input: PurchaseFormInput): Promise<{ id: string }> {
-  if (!input.productName.trim()) {
-    throw new Error("Product name is required.");
+  const validItems = input.items.filter((item) => item.product_name.trim());
+  if (validItems.length === 0) {
+    throw new Error("Add at least one item with a product name.");
   }
 
+  const totalPrice = validItems.reduce((s, i) => s + i.quantity * i.unit_price, 0);
   const supabase = await createClient();
-  const { error } = await supabase.from("purchases").update(buildRow(input)).eq("id", id);
 
-  if (error) {
-    throw new Error(error.message);
+  const { error: orderError } = await supabase
+    .from("purchase_orders")
+    .update(buildOrderRow(input, totalPrice))
+    .eq("id", id);
+
+  if (orderError) {
+    throw new Error(orderError.message);
+  }
+
+  const { error: deleteError } = await supabase.from("purchase_items").delete().eq("purchase_order_id", id);
+  if (deleteError) {
+    throw new Error(deleteError.message);
+  }
+
+  const { error: itemsError } = await supabase.from("purchase_items").insert(buildItemRows(id, validItems));
+  if (itemsError) {
+    throw new Error(itemsError.message);
   }
 
   revalidatePath("/purchases");
@@ -59,7 +101,7 @@ export async function updatePurchase(id: string, input: PurchaseFormInput): Prom
 
 export async function deletePurchase(id: string): Promise<void> {
   const supabase = await createClient();
-  const { error } = await supabase.from("purchases").delete().eq("id", id);
+  const { error } = await supabase.from("purchase_orders").delete().eq("id", id);
   if (error) {
     throw new Error(error.message);
   }
@@ -71,13 +113,12 @@ export async function searchPurchaseProducts(query: string) {
 
   const supabase = await createClient();
   const { data, error } = await supabase
-    .from("purchases")
+    .from("purchase_items")
     .select("product_name")
     .ilike("product_name", `%${query.trim()}%`)
-    .order("created_at", { ascending: false })
     .limit(20);
 
-  if (error) return [];
+  if (error || !data) return [];
   // De-duplicate product names (case-insensitive) for a clean suggestion list.
   const seen = new Set<string>();
   const names: string[] = [];

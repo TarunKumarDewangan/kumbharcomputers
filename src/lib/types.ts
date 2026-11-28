@@ -49,12 +49,20 @@ export type StockEntry = {
   created_at: string;
 };
 
-export type Purchase = {
+export type PurchaseItem = {
+  id: string;
+  sno: number;
+  product_name: string;
+  quantity: number;
+  unit_price: number;
+  amount: number;
+};
+
+export type PurchaseOrder = {
   id: string;
   purchase_date: string;
-  product_name: string;
-  description: string | null;
-  quantity: number;
+  notes: string | null;
   total_price: number;
   created_at: string;
+  purchase_items: PurchaseItem[];
 };
